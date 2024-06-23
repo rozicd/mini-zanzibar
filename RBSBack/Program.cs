@@ -18,7 +18,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 
-
+var _jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET")
+                       ?? throw new InvalidOperationException("JWT_SECRET environment variable is not set.");
 
 
 builder.Services.AddCors(options =>
@@ -47,7 +48,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = false,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("zanzibarrbszanzibarminirbszanzibarrbszanzibarminirbs"))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSecret))
         };
 
 

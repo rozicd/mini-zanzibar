@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using RBSBack.DTOS.Reponses;
 using RBSBack.DTOS.Requests;
@@ -78,8 +79,9 @@ namespace RBSBack.Controllers
                 new Claim(ClaimTypes.Role, user.Role.ToString()),
 
             };
-
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("zanzibarrbszanzibarminirbszanzibarrbszanzibarminirbs"));
+            var _jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET")
+                       ?? throw new InvalidOperationException("JWT_SECRET environment variable is not set.");
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSecret));
             var credentialsJWT = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
@@ -139,6 +141,7 @@ namespace RBSBack.Controllers
 
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "ADMIN")]
         public async Task<ActionResult> GetById(Guid id)
         {
             User user = await _userService.GetById(id);
