@@ -47,6 +47,17 @@ namespace RBSBack.Repositories
             return user;
         }
 
+        public async Task<User> GetByEmail(string email)
+        {
+            User user = await _users.FirstOrDefaultAsync(p => p.Email == email);
+            if (user == null)
+            {
+                throw new ResourceNotFoundException("User not found");
+            }
+
+            return user;
+        }
+
         public async Task<User> GetById(Guid id)
         {
             User userEntity = await _users.FirstOrDefaultAsync(p => p.Id == id);

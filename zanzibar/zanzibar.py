@@ -9,9 +9,11 @@ import plyvel
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-db = plyvel.DB(f'127.0.0.1:2012', create_if_missing=True)
+# Initialize LevelDB
+db = plyvel.DB('127.0.0.1:2012', create_if_missing=True)
 app = Flask(__name__)
 
+# Consul configuration
 consul_host = os.environ.get('CONSUL_HOST', 'localhost')
 consul_port = int(os.environ.get('CONSUL_PORT', 8500))
 consul_client = consul.Consul(host=consul_host, port=consul_port)
@@ -28,13 +30,13 @@ def set_namespace_config(namespace, config):
 @app.route('/acl', methods=['POST'])
 def create_acl():
     data = request.json
-    object_relation_user = f"{data['object']}#{data['relation']}@{data['user']}"
-    db.put(object_relation_user.encode('utf-8'), b'')
+    key = f"{data['object']}@{data['user']}"
+    value = data['relation']
+    db.put(key.encode('utf-8'), value.encode('utf-8'))
     return jsonify({"status": "success"}), 201
 
 @app.route('/acl/check', methods=['GET'])
 def check_acl():
-
     object = request.args.get('object')
     relation = request.args.get('relation')
     user = request.args.get('user')
@@ -42,14 +44,13 @@ def check_acl():
     namespace = object.split(':')[0]
     config = get_namespace_config(namespace)
 
-    logger.debug(config)
-    logger.debug("XDDDD")
     if not config:
         return jsonify({"authorized": False}), 404
 
     def is_authorized(obj, rel, usr):
-        key = f"{obj}#{rel}@{usr}"
-        if db.get(key.encode('utf-8')) is not None:
+        key = f"{obj}@{usr}"
+        stored_relation = db.get(key.encode('utf-8'))
+        if stored_relation and stored_relation.decode('utf-8') == rel:
             return True
 
         if 'union' in config.get(rel, {}):
@@ -92,7 +93,6 @@ def validate_namespace_config(data):
 
 @app.route('/namespace', methods=['POST'])
 def create_namespace():
-    logger.debug("AAAAAA")
     data = request.json
     if not validate_namespace_config(data):
         return jsonify({"status": "error", "message": "Invalid namespace configuration"}), 400
@@ -101,6 +101,15 @@ def create_namespace():
     config = data['relations']
     set_namespace_config(namespace, config)
     return jsonify({"status": "success"}), 201
+
+@app.route('/namespace/<namespace>/roles', methods=['GET'])
+def get_roles(namespace):
+    config = get_namespace_config(namespace)
+    if not config:
+        return jsonify({"status": "error", "message": "Namespace not found"}), 404
+
+    roles = list(config.keys())
+    return jsonify({"roles": roles}), 200
 
 if __name__ == '__main__':
     app.run(port=5000, host='0.0.0.0')
