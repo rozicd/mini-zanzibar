@@ -17,9 +17,13 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<INoteRepository, NoteRepository>();
+builder.Services.AddScoped<INoteService, NoteService>();
 
 var _jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET")
                        ?? throw new InvalidOperationException("JWT_SECRET environment variable is not set.");
+
+builder.Services.AddHttpClient();
 
 
 builder.Services.AddCors(options =>

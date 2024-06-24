@@ -6,6 +6,7 @@ namespace RBSBack.Repositories
     {
         Task<User> Add(User user);
         Task<User> GetByEmailAndPassword(string email, string password);
+        Task<User> GetByEmail(string email);
         Task<User> GetById(Guid id);
 
     }
