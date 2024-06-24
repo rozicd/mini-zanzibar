@@ -1,4 +1,6 @@
-﻿namespace RBSBack.Middlewares
+﻿using RBSBack.Exceptions;
+
+namespace RBSBack.Middlewares
 {
     public class ExceptionHandlingMiddleware
     {
@@ -30,7 +32,14 @@
             {
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
             }
-
+            else if (exception is ResourceNotFoundException)
+            {
+                context.Response.StatusCode = StatusCodes.Status404NotFound;
+            }
+            else if (exception is UnauthorizedAccessException)
+            {
+                context.Response.StatusCode = StatusCodes.Status403Forbidden;
+            }
             else
             {
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
