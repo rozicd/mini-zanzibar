@@ -28,8 +28,8 @@ const HomePage = () => {
   useEffect(() => {
     if (loggedUser != null && loggedUser.role === "ROLE_ADMIN") {
       navigate("/admin");
-    } else if (loggedUser != null && loggedUser.role === "ROLE_USER") {
-      navigate("/movies");
+    } else if (loggedUser != null && loggedUser.role === "User") {
+      navigate("/home");
     }
   }, []);
 

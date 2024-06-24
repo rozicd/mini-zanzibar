@@ -7,6 +7,7 @@ import HomePage from "./Pages/HomePage";
 import { BrowserRouter as Router } from "react-router-dom";
 import { Routes, Route } from "react-router-dom";
 import RegisterPage from "./Pages/RegisterPage";
+import NotesPage from "./Pages/NotesPage";
 
 
 export const API_BASE_URL = "http://localhost:5107/api";
@@ -18,7 +19,7 @@ function App() {
         <Routes>
           <Route path="/*" element={<HomePage />} >
 
-          <Route path="home" element={<div />} />
+          <Route path="home" element={<NotesPage />} />
           
 
 
