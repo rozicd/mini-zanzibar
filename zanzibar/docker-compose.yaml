@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  consul:
+    image: consul:1.15.4
+    ports:
+      - "8500:8500"
+
+  zanzibar:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - CONSUL_HOST=consul
+      - CONSUL_PORT=8500
+    depends_on:
+      - consul
