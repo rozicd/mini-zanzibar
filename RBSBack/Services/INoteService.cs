@@ -13,5 +13,6 @@ namespace RBSBack.Services
         Task<PaginationReturnObject<NoteReturnDTO>> GetAllNotesAsync(int pageNumber, int pageSize);
         Task<Note> UpdateNoteAsync(Guid id,UpdateNoteDTO note, string username);
         Task ShareNoteAsync(Guid noteId, string currentUsername, string targetUsername, string relation);
+        Task<bool> CreateNamespace(string content);
     }
 }

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using System.Text;
 
 namespace RBSBack.Services
 {
@@ -135,6 +136,18 @@ namespace RBSBack.Services
                 var result = await response.Content.ReadAsStringAsync();
                 var aclCheckResult = JsonConvert.DeserializeObject<dynamic>(result);
                 return aclCheckResult.authorized;
+            }
+            return false;
+        }
+
+        public async Task<bool> CreateNamespace(string jsonString)
+        {
+            HttpContent content = new StringContent(jsonString, Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync("http://localhost:5000/namespace", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return true;
             }
             return false;
         }
