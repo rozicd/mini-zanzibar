@@ -57,6 +57,37 @@ namespace RBSBack.Controllers
             return Ok(userDTO);
         }
 
+        [HttpPost("/admin")]
+        public async Task<IActionResult> AddAdmin([FromForm] CreateUserDTO user)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            User response = new User
+            {
+                Id = Guid.NewGuid(),
+                Name = user.Name,
+                Surname = user.Surname,
+                Email = user.Email,
+                Password = user.Password,
+                Role = Role.ADMIN,
+
+            };
+
+
+
+            User addedUser = await _userService.Add(response);
+            UserDTO userDTO = new UserDTO
+            {
+                Id = addedUser.Id,
+                Name = addedUser.Name,
+                Surname = addedUser.Surname,
+                Email = addedUser.Email,
+                Role = addedUser.Role,
+            };
+            return Ok(userDTO);
+        }
 
 
 

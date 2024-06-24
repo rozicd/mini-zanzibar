@@ -1,11 +1,13 @@
 ﻿// NotesController.cs
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using RBSBack.DTOS.Requests;
 using RBSBack.Models;
 using RBSBack.Services;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace RBSBack.Controllers
@@ -101,6 +103,28 @@ namespace RBSBack.Controllers
             {
                 return BadRequest(new { message = ex.Message });
             }
+        }
+        [HttpPost("/namespace")]
+        [Authorize(Roles = "ADMIN")]
+        public async Task<IActionResult> CreateNamespace([FromForm] CreateNamespaceDTO createNamespaceDTO)
+        {
+            if (createNamespaceDTO == null)
+            {
+                return BadRequest(new { message = "Invalid input" });
+            }
+
+
+
+            var jsonContent = JsonConvert.SerializeObject(createNamespaceDTO.Json);
+
+            var response = await _noteService.CreateNamespace(createNamespaceDTO.Json);
+            if (response)
+            {
+                return Ok();
+            }
+            return BadRequest(new { message = "invalid input" });
+
+            
         }
     }
 }

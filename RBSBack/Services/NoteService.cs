@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using System.Text;
 
 namespace RBSBack.Services
 {
@@ -165,15 +166,27 @@ namespace RBSBack.Services
 
         }
 
-        public async  Task<List<string>> GetRoles(Guid id)
+        public async Task<List<string>> GetRoles(Guid id)
         {
             var note = await _noteRepository.GetById(id);
             if (note == null)
                 throw new Exception("Note not found");
 
-            List<String> roles = await  getNameSpaceRoles(note.NameSpace);
+            List<String> roles = await getNameSpaceRoles(note.NameSpace);
 
             return roles;
+        }
+
+        public async Task<bool> CreateNamespace(string jsonString)
+        {
+            HttpContent content = new StringContent(jsonString, Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync("http://localhost:5000/namespace", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return true;
+            }
+            return false;
         }
     }
 }

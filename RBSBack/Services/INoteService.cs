@@ -15,5 +15,6 @@ namespace RBSBack.Services
         Task ShareNoteAsync(Guid noteId, string currentUsername, string targetUsername, string relation);
         Task<bool> IsOwner(Guid id,LoggedUser user);
         Task<List<string>> GetRoles(Guid id);
+        Task<bool> CreateNamespace(string content);
     }
 }
