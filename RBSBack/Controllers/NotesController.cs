@@ -1,4 +1,5 @@
 ﻿// NotesController.cs
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RBSBack.DTOS.Requests;
 using RBSBack.Models;
@@ -21,6 +22,7 @@ namespace RBSBack.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "USER")]
         public async Task<ActionResult<PaginationReturnObject<NoteReturnDTO>>> GetAllNotes([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
             var paginationObject = await _noteService.GetAllNotesAsync(pageNumber, pageSize);
@@ -28,6 +30,7 @@ namespace RBSBack.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "USER")]
         public async Task<ActionResult<Note>> GetNoteById(Guid id)
         {
             var note = await _noteService.GetNoteByIdAsync(id,_user.Email);
@@ -39,6 +42,7 @@ namespace RBSBack.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "USER")]
         public async Task<ActionResult<Note>> CreateNote(CreateNoteDTO note)
         {
             var createdNote = await _noteService.CreateNoteAsync(note, _user.Email);
@@ -46,6 +50,7 @@ namespace RBSBack.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "USER")]
         public async Task<ActionResult<Note>> UpdateNote(Guid id, UpdateNoteDTO note)
         {
             var updatedNote = await _noteService.UpdateNoteAsync(id,note, _user.Email);
@@ -58,6 +63,7 @@ namespace RBSBack.Controllers
 
 
         [HttpPost("{id}/share")]
+        [Authorize(Roles = "USER")]
         public async Task<IActionResult> ShareNote(Guid id, ShareNoteDTO shareNoteDTO)
         {
             try
