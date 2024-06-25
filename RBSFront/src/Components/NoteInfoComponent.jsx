@@ -8,7 +8,14 @@ import {
   MenuItem,
   InputLabel,
   FormControl,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  IconButton,
 } from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { API_BASE_URL } from "../App";
@@ -19,15 +26,21 @@ const NoteInfoComponent = ({ note }) => {
   const [roles, setRoles] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const [selectedRole, setSelectedRole] = useState("");
+  const [access, setAccess] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [noteContent, setNoteContent] = useState("");
 
   useEffect(() => {
     axios
       .get(`${API_BASE_URL}/Notes/${note.id}`, { withCredentials: true })
       .then((response) => {
         setText(response.data.text);
+        setNoteContent(response.data.text);
+        setAccess(true);
       })
       .catch((error) => {
         setText(error.response.data);
+        setAccess(false);
       });
 
     axios
@@ -58,15 +71,42 @@ const NoteInfoComponent = ({ note }) => {
     console.log("Input Value:", inputValue);
     console.log("Selected Role:", selectedRole);
     let user = {
-      "targetUsername": inputValue,
-      "relation": selectedRole,
-    }
+      targetUsername: inputValue,
+      relation: selectedRole,
+    };
 
-    axios.post(`${API_BASE_URL}/Notes/${note.id}/share`, user, { withCredentials: true })
-      .then(response => {
+    axios
+      .post(`${API_BASE_URL}/Notes/${note.id}/share`, user, {
+        withCredentials: true,
+      })
+      .then((response) => {
         console.log(response);
       })
-      .catch(error => {
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const handleOpenDialog = () => {
+    setDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setDialogOpen(false);
+  };
+
+  const handleEditSubmit = () => {
+    axios
+      .put(
+        `${API_BASE_URL}/Notes/${note.id}`,
+        { text: noteContent },
+        { withCredentials: true }
+      )
+      .then((response) => {
+        setText(noteContent);
+        handleCloseDialog();
+      })
+      .catch((error) => {
         console.log(error);
       });
   };
@@ -80,6 +120,7 @@ const NoteInfoComponent = ({ note }) => {
             <Typography variant="body2">{text}</Typography>
           </Box>
         </Grid>
+        
         {isOwner && (
           <Grid item xs={12} mt={2}>
             <TextField
@@ -117,7 +158,41 @@ const NoteInfoComponent = ({ note }) => {
             </Button>
           </Grid>
         )}
+        {access && (
+          <Grid item xs={12} mt={2}>
+            <IconButton sx = {{float:"right"}} color="secondary" onClick={handleOpenDialog}>
+              <EditIcon />
+            </IconButton>
+          </Grid>
+        )}
       </Grid>
+      <Dialog open={dialogOpen} onClose={handleCloseDialog}>
+        <DialogTitle sx={{ backgroundColor: "#333" }}>Edit Note</DialogTitle>
+        <DialogContent sx={{ backgroundColor: "#333" }}>
+          <DialogContentText sx={{ backgroundColor: "#333" }}>
+            Edit the content of the note below:
+          </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Note Content"
+            type="text"
+            fullWidth
+            multiline
+            rows={4}
+            value={noteContent}
+            onChange={(e) => setNoteContent(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions sx={{ backgroundColor: "#333" }}>
+          <Button onClick={handleCloseDialog} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleEditSubmit} color="primary">
+            Edit
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };
