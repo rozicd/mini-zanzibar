@@ -1,5 +1,4 @@
-﻿// NotesController.cs
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using RBSBack.DTOS.Requests;
