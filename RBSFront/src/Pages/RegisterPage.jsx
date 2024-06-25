@@ -23,6 +23,11 @@ const loginTemplate = [
     },
     {
         item: "BasicInput",
+        label: "Surname",
+        itemValue: "surname"
+    },
+    {
+        item: "BasicInput",
         label: "Password",
         itemValue: "password",
         type: "password"
@@ -61,8 +66,14 @@ const RegisterPage = () => {
     };
 
     const handleSubmit = async (state) => {
+
         setUserCredentials(state);
-        axios.post(`${API_BASE_URL}/auth/register`, state, {
+        let data = new FormData();
+        data.append("email", state.email);
+        data.append("name", state.name);
+        data.append("surname", state.surname);
+        data.append("password", state.password);
+        axios.post(`${API_BASE_URL}/users`, data, {
             withCredentials: true,
         }).then((response) => {
             console.log(response);

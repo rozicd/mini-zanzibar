@@ -59,7 +59,12 @@ const LoginComponent = () => {
             withCredentials: true,
         }).then((response) => {
             console.log(response);
+            if (response.data.role == 0) {
             navigate("/home");
+            }
+            else if (response.data.role == 1) {
+            navigate("/admin-home");
+            }
         }).catch((error) => {
             console.log(error);
         });

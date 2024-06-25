@@ -16,5 +16,9 @@ namespace RBSBack.Services
         Task<bool> IsOwner(Guid id,LoggedUser user);
         Task<List<string>> GetRoles(Guid id);
         Task<bool> CreateNamespace(string content);
+        Task<bool> SwitchNamespaceAsync(string version);
+        Task<string> GetActiveVersionAsync();
+
+        Task<List<string>> GetAllNamespaceVersionsAsync();
     }
 }

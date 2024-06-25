@@ -1,5 +1,4 @@
-﻿// NotesController.cs
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using RBSBack.DTOS.Requests;
@@ -104,7 +103,24 @@ namespace RBSBack.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
-        [HttpPost("/namespace")]
+
+        [HttpPost("namespace/switch")]
+        [Authorize(Roles = "ADMIN")]
+        public async Task<IActionResult> SwitchNamespace(UpdateNoteDTO text)
+        {
+            var response = await _noteService.SwitchNamespaceAsync(text.Text);
+            if (response)
+            {
+                return Ok();
+            }
+            return BadRequest(new { message = "invalid input" });
+            
+        }
+
+
+
+
+        [HttpPost("namespace")]
         [Authorize(Roles = "ADMIN")]
         public async Task<IActionResult> CreateNamespace([FromForm] CreateNamespaceDTO createNamespaceDTO)
         {
@@ -126,5 +142,22 @@ namespace RBSBack.Controllers
 
             
         }
+
+        [HttpGet("namespace/active")]
+
+        public async Task<IActionResult> GetActiveNamespace()
+        {
+            var response = await _noteService.GetActiveVersionAsync();
+            return Ok(response);
+        }
+
+        [HttpGet("namespace/all")]
+
+        public async Task<IActionResult> GetAllNamespaceVersions()
+        {
+            var response = await _noteService.GetAllNamespaceVersionsAsync();
+            return Ok(response);
+        }
+       
     }
 }
