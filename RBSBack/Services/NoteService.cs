@@ -126,7 +126,24 @@ namespace RBSBack.Services
             return false;
         }
 
-        private async Task<bool> CheckAclAsync(string name, string relation, string username)
+
+        private async Task<List<String>> getNameSpaceRoles(String nameSpace)
+        {
+             var response = await _httpClient.GetAsync($"http://localhost:5000/namespace/{nameSpace}/roles");
+            List<String> roles = new List<String>();
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadAsStringAsync();
+                var rolesResponse = JsonConvert.DeserializeObject<RolesResponse>(result);
+                roles = rolesResponse.Roles;
+            }
+            return roles;
+
+
+    }
+
+
+      private async Task<bool> CheckAclAsync(string name, string relation, string username)
         {
             var response = await _httpClient.GetAsync($"http://localhost:5000/acl/check?object={name}&relation={relation}&user=user:{username}");
             if (response.IsSuccessStatusCode)
@@ -136,6 +153,28 @@ namespace RBSBack.Services
                 return aclCheckResult.authorized;
             }
             return false;
+        }
+
+        public async Task<bool> IsOwner(Guid id, LoggedUser user)
+        {
+            var note = await _noteRepository.GetById(id);
+            if (note == null)
+                throw new Exception("Note not found");
+
+            return await CheckAclAsync(note.NameSpace, note.Name, "owner", user.Email);
+
+
+        }
+
+        public async Task<List<string>> GetRoles(Guid id)
+        {
+            var note = await _noteRepository.GetById(id);
+            if (note == null)
+                throw new Exception("Note not found");
+
+            List<String> roles = await getNameSpaceRoles(note.NameSpace);
+
+            return roles;
         }
 
         public async Task<bool> CreateNamespace(string jsonString)

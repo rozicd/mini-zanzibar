@@ -17,6 +17,8 @@ namespace RBSBack.Controllers
     {
         private readonly IUserService _userService;
 
+
+
         public UserController(IUserService userService) : base()
         {
             _userService = userService;
@@ -169,6 +171,8 @@ namespace RBSBack.Controllers
                 return Ok(_user);
             }
         }
+
+      
 
 
         [HttpGet("{id}")]

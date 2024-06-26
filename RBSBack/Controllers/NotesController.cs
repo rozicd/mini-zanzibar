@@ -42,6 +42,28 @@ namespace RBSBack.Controllers
             return Ok(note);
         }
 
+        [HttpGet("is-owner/{id}")]
+        public async Task<bool> isOwner(Guid id)
+        {
+            if (await _noteService.IsOwner(id,_user))
+            {
+                return true;
+            }
+            return false;
+
+
+        }
+
+        [HttpGet("note-roles/{id}")]
+        public async Task<List<String>> noteRoles(Guid id)
+        {
+            List<String> roles = await _noteService.GetRoles(id);
+
+            return roles;
+
+
+        }
+
         [HttpPost]
         [Authorize(Roles = "USER")]
         public async Task<ActionResult<Note>> CreateNote(CreateNoteDTO note)
