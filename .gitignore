@@ -20,6 +20,10 @@
 # Mono auto generated files
 mono_crash.*
 
+*.sonarqube
+*.scannerwork
+*.crt
+*.key
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/

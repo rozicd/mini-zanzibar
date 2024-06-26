@@ -130,7 +130,7 @@ namespace RBSBack.Controllers
             Response.Cookies.Append("jwtToken", tokenString, new CookieOptions
             {
                 HttpOnly = true,
-                Secure = false,
+                Secure = true,
                 Expires = DateTime.UtcNow.AddDays(30),
 
             });
@@ -150,7 +150,7 @@ namespace RBSBack.Controllers
             Response.Cookies.Append("jwtToken", "", new CookieOptions
             {
                 HttpOnly = true,
-                Secure = false,
+                Secure = true,
                 Expires = DateTime.UtcNow.AddYears(-1),
             });
 

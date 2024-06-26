@@ -7,6 +7,11 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Text;
+<<<<<<< Updated upstream
+=======
+using System.Security.Cryptography.X509Certificates;
+using System.Net.Security;
+>>>>>>> Stashed changes
 
 namespace RBSBack.Services
 {
@@ -20,7 +25,22 @@ namespace RBSBack.Services
         {
             _noteRepository = noteRepository;
             _userRepository = userRepository;
+<<<<<<< Updated upstream
             _httpClient = httpClient;
+=======
+            var clientCertificate = new X509Certificate2("../zanzibar/client.crt", "../zanzibar/client.key");
+
+            var trustedServerCertificate = new X509Certificate2("../zanzibar/server.crt");
+
+            var handler = new HttpClientHandler();
+            handler.ClientCertificates.Add(clientCertificate);
+            handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) =>
+            {
+                return cert.Equals(trustedServerCertificate);
+            };
+
+            _httpClient = new HttpClient(handler);
+>>>>>>> Stashed changes
         }
 
         public async Task<Note> CreateNoteAsync(CreateNoteDTO note, string username)

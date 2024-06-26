@@ -32,6 +32,10 @@ namespace RBSBack.Middlewares
             {
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
             }
+            else if (exception is ArgumentNullException)
+            {
+                context.Response.StatusCode = StatusCodes.Status400BadRequest;
+            }
             else if (exception is ResourceNotFoundException)
             {
                 context.Response.StatusCode = StatusCodes.Status404NotFound;

@@ -17,21 +17,13 @@ namespace RBSBack.Middlewares
         {
             if (context.User.Identity is ClaimsIdentity identity)
             {
-                try
-                {
-                    LoggedUser loggedUser = new LoggedUser();
-                    loggedUser.Id = new Guid(identity.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-                    loggedUser.Name = identity.FindFirst(ClaimTypes.Name)?.Value;
-                    loggedUser.Surname = identity.FindFirst(ClaimTypes.Surname)?.Value;
-                    loggedUser.Email = identity.FindFirst(ClaimTypes.Email)?.Value;
-                    loggedUser.Role = Enum.Parse<Role>(identity.FindFirst(ClaimTypes.Role)?.Value);
-                    context.Items["loggedUser"] = loggedUser;
-
-
-                }
-                catch
-                {
-                }
+                LoggedUser loggedUser = new LoggedUser();
+                loggedUser.Id = new Guid(identity.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+                loggedUser.Name = identity.FindFirst(ClaimTypes.Name)?.Value;
+                loggedUser.Surname = identity.FindFirst(ClaimTypes.Surname)?.Value;
+                loggedUser.Email = identity.FindFirst(ClaimTypes.Email)?.Value;
+                loggedUser.Role = Enum.Parse<Role>(identity.FindFirst(ClaimTypes.Role)?.Value);
+                context.Items["loggedUser"] = loggedUser;
             }
 
             await _next(context);
