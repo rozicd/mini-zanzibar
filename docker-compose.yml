@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres
+    container_name: rbs
+    restart: always
+    environment:
+      POSTGRES_USER: rbs_user
+      POSTGRES_PASSWORD: rbs_password
+      POSTGRES_DB: rbs_db
+    ports:
+      - "5432:5432"
+    working_dir: /var/lib/postgresql/data
+    volumes:
+      - Postgres:/var/lib/postgresql/data
+    tty: true
+    networks:
+      - rbs
+
+volumes:
+  Postgres:
+
+networks:
+  rbs:
+
+
