@@ -59,17 +59,22 @@ const LoginComponent = () => {
             withCredentials: true,
         }).then((response) => {
             console.log(response);
+            if (response.data.role == 0) {
             navigate("/home");
+            }
+            else if (response.data.role == 1) {
+            navigate("/admin-home");
+            }
         }).catch((error) => {
             console.log(error);
         });
     };
 
     return (
-        <div>
-            <Card sx={{ maxWidth: 400,margin: "0 auto", marginTop:'50px', padding: "10px", backgroundColor: "#333", color: "white" }}>
+        <div >
+            <Card sx={{ maxWidth: 400,maxHeight:500,margin: "0 auto", marginTop:'50px', padding: "10px", backgroundColor: "#333", color: "white" }}>
                 <CardContent>
-                    <BasicForm label="Lookmovie3.rs" buttonName = "Login" template={loginTemplate} callback={handleSubmit} />
+                    <BasicForm label="Notes" buttonName = "Login" template={loginTemplate} callback={handleSubmit} />
                     <Link to="/register" style={{ textDecoration: 'none', color: 'white' ,display:'flex',justifyContent:'center',alignItems:'center'}} >
                         <Button color="inherit" sx={{fontSize:'small', marginTop:"10px"}}>
                              New here? Register

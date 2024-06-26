@@ -23,7 +23,8 @@ namespace RBSBack.Repositories
         public async Task<Note> Add(Note note)
         {
             var existingNOte = await _notes.FirstOrDefaultAsync(n => n.Name == note.Name);
-            if (note != null)
+            if (existingNOte != null)
+
             {
                 throw new EmailAlreadyExistException("Note with that name already exists!");
             }

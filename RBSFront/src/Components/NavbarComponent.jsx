@@ -36,10 +36,10 @@ const NavbarComponent = ({ loggedUser }) => {
             variant="h4"
             component="div"
           >
-            Lookmovie3
+            Notes
           </Typography>
           
-          {loggedUser && (
+          {loggedUser && loggedUser.role == 0 &&(
             <>
               <Link to="/home" style={{ textDecoration: 'none', color: 'white' }}>
                 <Button color="inherit" sx={{ marginLeft: "10px" }}>
@@ -50,11 +50,11 @@ const NavbarComponent = ({ loggedUser }) => {
             </>
           )}
 
-          {loggedUser.role === "ROLE_ADMIN" && (
+          {loggedUser.role == "1" && (
             <>
-              <Link to="/create-movie" style={{ textDecoration: 'none', color: 'white' }}>
+              <Link to="/admin-home" style={{ textDecoration: 'none', color: 'white' }}>
                 <Button color="inherit" sx={{ marginLeft: "10px" }}>
-                  Create Movie
+                  Home
                 </Button>
               </Link>
               

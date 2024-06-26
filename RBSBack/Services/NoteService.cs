@@ -126,10 +126,10 @@ namespace RBSBack.Services
             return false;
         }
 
+        private async Task<List<String>> getNameSpaceRoles()
 
-        private async Task<List<String>> getNameSpaceRoles(String nameSpace)
         {
-             var response = await _httpClient.GetAsync($"http://localhost:5000/namespace/{nameSpace}/roles");
+             var response = await _httpClient.GetAsync($"http://localhost:5000/namespace/roles");
             List<String> roles = new List<String>();
             if (response.IsSuccessStatusCode)
             {
@@ -141,6 +141,7 @@ namespace RBSBack.Services
 
 
     }
+
 
 
       private async Task<bool> CheckAclAsync(string name, string relation, string username)
@@ -155,13 +156,29 @@ namespace RBSBack.Services
             return false;
         }
 
+        public async Task<bool> SwitchNamespaceAsync(string version)
+        {
+            var requestData = new { version };
+            var jsonContent = new StringContent(JsonConvert.SerializeObject(requestData), Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.PostAsync("http://localhost:5000/namespace/switch", jsonContent);
+            if (response.IsSuccessStatusCode)
+            {
+                return true;
+            }
+
+            var result = await response.Content.ReadAsStringAsync();
+            var errorResponse = JsonConvert.DeserializeObject<dynamic>(result);
+            throw new Exception($"Error switching namespace: {errorResponse.message}");
+        }
+
         public async Task<bool> IsOwner(Guid id, LoggedUser user)
         {
             var note = await _noteRepository.GetById(id);
             if (note == null)
                 throw new Exception("Note not found");
 
-            return await CheckAclAsync(note.NameSpace, note.Name, "owner", user.Email);
+            return await CheckAclAsync( note.Name, "owner", user.Email);
 
 
         }
@@ -172,7 +189,7 @@ namespace RBSBack.Services
             if (note == null)
                 throw new Exception("Note not found");
 
-            List<String> roles = await getNameSpaceRoles(note.NameSpace);
+            List<String> roles = await getNameSpaceRoles();
 
             return roles;
         }
@@ -187,6 +204,31 @@ namespace RBSBack.Services
                 return true;
             }
             return false;
+        }
+
+        public async Task<string> GetActiveVersionAsync()
+        {
+            var response = await _httpClient.GetAsync("http://localhost:5000/active");
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadAsStringAsync();
+                var activeVersionResponse = JsonConvert.DeserializeObject<dynamic>(result);
+                return activeVersionResponse.versions;
+            }
+            throw new Exception("Error fetching active version");
+        }
+
+        public async Task<List<string>> GetAllNamespaceVersionsAsync()
+        {
+            var response = await _httpClient.GetAsync("http://localhost:5000/namespaces");
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadAsStringAsync();
+                var namespaceVersionsResponse = JsonConvert.DeserializeObject<dynamic>(result);
+                var versions = namespaceVersionsResponse.versions.ToObject<List<string>>();
+                return versions;
+            }
+            throw new Exception("Error fetching namespace versions");
         }
     }
 }

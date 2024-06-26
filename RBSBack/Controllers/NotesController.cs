@@ -43,6 +43,7 @@ namespace RBSBack.Controllers
         }
 
         [HttpGet("is-owner/{id}")]
+        [Authorize(Roles = "USER")]
         public async Task<bool> isOwner(Guid id)
         {
             if (await _noteService.IsOwner(id,_user))
@@ -55,6 +56,7 @@ namespace RBSBack.Controllers
         }
 
         [HttpGet("note-roles/{id}")]
+        [Authorize(Roles = "USER")]
         public async Task<List<String>> noteRoles(Guid id)
         {
             List<String> roles = await _noteService.GetRoles(id);
@@ -103,7 +105,24 @@ namespace RBSBack.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
-        [HttpPost("/namespace")]
+
+        [HttpPost("namespace/switch")]
+        [Authorize(Roles = "ADMIN")]
+        public async Task<IActionResult> SwitchNamespace(UpdateNoteDTO text)
+        {
+            var response = await _noteService.SwitchNamespaceAsync(text.Text);
+            if (response)
+            {
+                return Ok();
+            }
+            return BadRequest(new { message = "invalid input" });
+            
+        }
+
+
+
+
+        [HttpPost("namespace")]
         [Authorize(Roles = "ADMIN")]
         public async Task<IActionResult> CreateNamespace([FromForm] CreateNamespaceDTO createNamespaceDTO)
         {
@@ -125,5 +144,22 @@ namespace RBSBack.Controllers
 
             
         }
+
+        [HttpGet("namespace/active")]
+        [Authorize(Roles = "ADMIN")]
+        public async Task<IActionResult> GetActiveNamespace()
+        {
+            var response = await _noteService.GetActiveVersionAsync();
+            return Ok(response);
+        }
+
+        [HttpGet("namespace/all")]
+        [Authorize(Roles = "ADMIN")]
+        public async Task<IActionResult> GetAllNamespaceVersions()
+        {
+            var response = await _noteService.GetAllNamespaceVersionsAsync();
+            return Ok(response);
+        }
+       
     }
 }
