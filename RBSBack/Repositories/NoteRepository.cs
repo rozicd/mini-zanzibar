@@ -24,6 +24,7 @@ namespace RBSBack.Repositories
         {
             var existingNOte = await _notes.FirstOrDefaultAsync(n => n.Name == note.Name);
             if (existingNOte != null)
+
             {
                 throw new EmailAlreadyExistException("Note with that name already exists!");
             }

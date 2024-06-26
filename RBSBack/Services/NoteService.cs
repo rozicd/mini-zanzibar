@@ -127,6 +127,7 @@ namespace RBSBack.Services
         }
 
         private async Task<List<String>> getNameSpaceRoles()
+
         {
              var response = await _httpClient.GetAsync($"http://localhost:5000/namespace/roles");
             List<String> roles = new List<String>();
@@ -142,7 +143,8 @@ namespace RBSBack.Services
     }
 
 
-        private async Task<bool> CheckAclAsync(string name, string relation, string username)
+
+      private async Task<bool> CheckAclAsync(string name, string relation, string username)
         {
             var response = await _httpClient.GetAsync($"http://localhost:5000/acl/check?object={name}&relation={relation}&user=user:{username}");
             if (response.IsSuccessStatusCode)
