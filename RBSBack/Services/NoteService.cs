@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Text;
 using System.Security.Cryptography.X509Certificates;
+using System.Net.Security;
 
 namespace RBSBack.Services
 {
@@ -21,11 +22,17 @@ namespace RBSBack.Services
         {
             _noteRepository = noteRepository;
             _userRepository = userRepository;
-            var clientCertificate = new X509Certificate2("../zanzibar/govno.crt");
+
+            var clientCertificate = new X509Certificate2("../zanzibar/client.crt", "../zanzibar/client.key");
+
+            var trustedServerCertificate = new X509Certificate2("../zanzibar/server.crt");
 
             var handler = new HttpClientHandler();
             handler.ClientCertificates.Add(clientCertificate);
-            handler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+            handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) =>
+            {
+                return cert.Equals(trustedServerCertificate);
+            };
 
             _httpClient = new HttpClient(handler);
         }
