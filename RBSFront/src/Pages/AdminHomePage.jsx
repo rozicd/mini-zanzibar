@@ -7,15 +7,53 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
+  Snackbar,
+  Alert,
+  styled,
 } from "@mui/material";
 import axios from "axios";
 import { API_BASE_URL } from "../App";
 
+const CustomSelect = styled(Select)(({ theme }) => ({
+  backgroundColor: "#333",
+  color: "white",
+  "& .MuiOutlinedInput-notchedOutline": {
+    borderColor: "gray",
+  },
+  "&:hover .MuiOutlinedInput-notchedOutline": {
+    borderColor: "lightgray",
+  },
+  "& .MuiSvgIcon-root": {
+    color: "white",
+  },
+  "& .MuiSelect-select": {
+    backgroundColor: "#333",
+  },
+  "& .MuiSelect-icon": {
+    color: "white",
+  },
+  "& .MuiInputBase-root": {
+    backgroundColor: "#333",
+  },
+  "& .MuiPaper-root": {
+    backgroundColor: "#333",
+    color: "white",
+  },
+}));
+
+const CustomMenuItem = styled(MenuItem)({
+  backgroundColor: "#333",
+  color: "white",
+  "&:hover": {
+    backgroundColor: "gray",
+  },
+});
 const AdminHomePage = () => {
   const [textValue, setTextValue] = useState("");
   const [selectValue, setSelectValue] = useState("");
   const [allVersions, setAllVersions] = useState([]);
   const [refresh, setRefresh] = useState(false);
+  const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "" });
 
   const handleTextChange = (event) => {
     setTextValue(event.target.value);
@@ -33,9 +71,11 @@ const AdminHomePage = () => {
       .then((response) => {
         console.log(response);
         setRefresh(!refresh);
+        setSnackbar({ open: true, message: "Text submitted successfully", severity: "success" });
       })
       .catch((error) => {
         console.log(error);
+        setSnackbar({ open: true, message: "Text submission failed", severity: "error" });
       });
   };
 
@@ -48,9 +88,11 @@ const AdminHomePage = () => {
       )
       .then((response) => {
         console.log(response);
+        setSnackbar({ open: true, message: "Version saved successfully", severity: "success" });
       })
       .catch((error) => {
         console.log(error);
+        setSnackbar({ open: true, message: "Version save failed", severity: "error" });
       });
   };
 
@@ -76,13 +118,17 @@ const AdminHomePage = () => {
       });
   }, [refresh]);
 
+  const handleSnackbarClose = () => {
+    setSnackbar({ ...snackbar, open: false });
+  };
+
   return (
     <Grid container spacing={2} style={{ height: "95vh", marginTop: "20px" }}>
       <Grid item xs={9}>
         <TextField
           fullWidth
           variant="outlined"
-          label="Text Box"
+          label="Namespace JSON (format- {relations: {relations}}"
           value={textValue}
           onChange={handleTextChange}
           multiline
@@ -103,23 +149,18 @@ const AdminHomePage = () => {
           fullWidth
           variant="outlined"
         >
-          <InputLabel>Select Option</InputLabel>
-          <Select
-            sx={{ backgroundColor: "#333" }}
+          <InputLabel sx={{ color: "white" }}>Select Option</InputLabel>
+          <CustomSelect
             value={selectValue}
             onChange={handleSelectChange}
             label="Select Option"
           >
             {allVersions.map((version) => (
-              <MenuItem
-                sx={{ backgroundColor: "#333" }}
-                key={version}
-                value={version}
-              >
+              <CustomMenuItem key={version} value={version}>
                 {version}
-              </MenuItem>
+              </CustomMenuItem>
             ))}
-          </Select>
+          </CustomSelect>
         </FormControl>
         <Button
           variant="contained"
@@ -130,6 +171,15 @@ const AdminHomePage = () => {
           Save
         </Button>
       </Grid>
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+      >
+        <Alert onClose={handleSnackbarClose} severity={snackbar.severity}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Grid>
   );
 };

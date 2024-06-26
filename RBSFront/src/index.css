@@ -22,7 +22,6 @@ html {
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: #888; /* Color of the scrollbar */
   border-radius: 10px; /* Rounded corners */
 }
 

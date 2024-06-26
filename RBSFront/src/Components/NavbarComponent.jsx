@@ -36,7 +36,7 @@ const NavbarComponent = ({ loggedUser }) => {
             variant="h4"
             component="div"
           >
-            Lookmovie3
+            Notes
           </Typography>
           
           {loggedUser && loggedUser.role == 0 &&(

@@ -7,7 +7,7 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import NoteCardComponent from "../Components/NoteCardComponent";
-import { Dialog, DialogActions, DialogContent, DialogTitle, IconButton } from "@mui/material";
+import { Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Snackbar, Alert } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 
 const NotesPage = () => {
@@ -21,6 +21,7 @@ const NotesPage = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [newNoteName, setNewNoteName] = useState("");
   const [newNoteText, setNewNoteText] = useState("");
+  const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "" });
 
   useEffect(() => {
     axios
@@ -64,6 +65,7 @@ const NotesPage = () => {
       })
       .catch((error) => {
         console.log(error);
+        setSnackbar({ open: true, message: "Failed to fetch notes", severity: "error" });
       });
   };
 
@@ -86,10 +88,16 @@ const NotesPage = () => {
         console.log(response);
         fetchNotes();
         handleCloseDialog();
+        setSnackbar({ open: true, message: "Note added successfully", severity: "success" });
       })
       .catch((error) => {
         console.log(error);
+        setSnackbar({ open: true, message: "Failed to add note", severity: "error" });
       });
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbar({ ...snackbar, open: false });
   };
 
   return (
@@ -152,6 +160,16 @@ const NotesPage = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+      >
+        <Alert onClose={handleSnackbarClose} severity={snackbar.severity}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

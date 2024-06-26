@@ -14,6 +14,8 @@ import {
   DialogContentText,
   DialogTitle,
   IconButton,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import React, { useState, useEffect } from "react";
@@ -29,6 +31,7 @@ const NoteInfoComponent = ({ note }) => {
   const [access, setAccess] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [noteContent, setNoteContent] = useState("");
+  const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "" });
 
   useEffect(() => {
     axios
@@ -81,9 +84,11 @@ const NoteInfoComponent = ({ note }) => {
       })
       .then((response) => {
         console.log(response);
+        setSnackbar({ open: true, message: "Role assigned successfully", severity: "success" });
       })
       .catch((error) => {
         console.log(error);
+        setSnackbar({ open: true, message: "Failed to assign role", severity: "error" });
       });
   };
 
@@ -105,10 +110,16 @@ const NoteInfoComponent = ({ note }) => {
       .then((response) => {
         setText(noteContent);
         handleCloseDialog();
+        setSnackbar({ open: true, message: "Note edited successfully", severity: "success" });
       })
       .catch((error) => {
         console.log(error);
+        setSnackbar({ open: true, message: "Failed to edit note", severity: "error" });
       });
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbar({ ...snackbar, open: false });
   };
 
   return (
@@ -160,7 +171,7 @@ const NoteInfoComponent = ({ note }) => {
         )}
         {access && (
           <Grid item xs={12} mt={2}>
-            <IconButton sx = {{float:"right"}} color="secondary" onClick={handleOpenDialog}>
+            <IconButton sx={{ float: "right" }} color="secondary" onClick={handleOpenDialog}>
               <EditIcon />
             </IconButton>
           </Grid>
@@ -193,6 +204,15 @@ const NoteInfoComponent = ({ note }) => {
           </Button>
         </DialogActions>
       </Dialog>
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+      >
+        <Alert onClose={handleSnackbarClose} severity={snackbar.severity}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </>
   );
 };
