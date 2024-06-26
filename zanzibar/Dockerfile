@@ -10,7 +10,10 @@ WORKDIR /app
 COPY . /app
 
 # Install any needed packages specified in requirements.txt
-RUN pip install --no-cache-dir python-consul plyvel Flask
+RUN pip install --no-cache-dir python-consul plyvel Flask pyOpenSSL gunicorn
+
+COPY server.crt /app/server.crt
+COPY server.key /app/server.key
 
 # Make port 5000 available to the world outside this container
 EXPOSE 5000
@@ -19,4 +22,4 @@ EXPOSE 5000
 ENV FLASK_APP=zanzibar.py
 
 # Run flask app when the container launches
-CMD ["flask", "run", "--host=0.0.0.0", "--port=5000"]
+CMD ["gunicorn", "-w", "1", "-b", "0.0.0.0:5000", "--certfile", "server.crt", "--keyfile", "server.key", "zanzibar:app"]

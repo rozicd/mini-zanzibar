@@ -1,9 +1,11 @@
 import logging
 import json
 import os
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, redirect
 import consul
 import plyvel
+from OpenSSL import SSL
+
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -14,6 +16,18 @@ app = Flask(__name__)
 consul_host = os.environ.get('CONSUL_HOST', 'localhost')
 consul_port = int(os.environ.get('CONSUL_PORT', 8500))
 consul_client = consul.Consul(host=consul_host, port=consul_port)
+
+context = SSL.Context(SSL.TLSv1_2_METHOD)
+context.use_privatekey_file('/app/server.key')
+context.use_certificate_file('/app/server.crt')
+
+
+@app.before_request
+def before_request():
+    if not request.is_secure and request.headers.get('X-Forwarded-Proto', 'http') != 'https':
+        url = request.url.replace('http://', 'https://', 1)
+        code = 301
+        return redirect(url, code=code)
 
 def get_active_namespace():
     index, data = consul_client.kv.get('active_namespace')
@@ -154,4 +168,4 @@ def switch_active_namespace():
     return jsonify({"status": "success"}), 200
 
 if __name__ == '__main__':
-    app.run(port=5000, host='0.0.0.0')
+    app.run(port=5000, host='0.0.0.0',ssl_context=context,debug=False)

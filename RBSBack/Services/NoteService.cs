@@ -7,11 +7,8 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Text;
-<<<<<<< Updated upstream
-=======
 using System.Security.Cryptography.X509Certificates;
 using System.Net.Security;
->>>>>>> Stashed changes
 
 namespace RBSBack.Services
 {
@@ -21,13 +18,11 @@ namespace RBSBack.Services
         private readonly IUserRepository _userRepository;
         private readonly HttpClient _httpClient;
 
-        public NoteService(INoteRepository noteRepository, IUserRepository userRepository, HttpClient httpClient)
+        public NoteService(INoteRepository noteRepository, IUserRepository userRepository)
         {
             _noteRepository = noteRepository;
             _userRepository = userRepository;
-<<<<<<< Updated upstream
-            _httpClient = httpClient;
-=======
+
             var clientCertificate = new X509Certificate2("../zanzibar/client.crt", "../zanzibar/client.key");
 
             var trustedServerCertificate = new X509Certificate2("../zanzibar/server.crt");
@@ -40,7 +35,6 @@ namespace RBSBack.Services
             };
 
             _httpClient = new HttpClient(handler);
->>>>>>> Stashed changes
         }
 
         public async Task<Note> CreateNoteAsync(CreateNoteDTO note, string username)
@@ -60,7 +54,7 @@ namespace RBSBack.Services
                 relation = "owner",
                 user = $"user:{username}"
             };
-            await _httpClient.PostAsJsonAsync("http://localhost:5000/acl", aclData);
+            await _httpClient.PostAsJsonAsync("https://localhost:5000/acl", aclData);
 
             return createdNote;
         }
@@ -131,12 +125,12 @@ namespace RBSBack.Services
                 relation,
                 user = $"user:{targetUsername}"
             };
-            await _httpClient.PostAsJsonAsync("http://localhost:5000/acl", aclData);
+            await _httpClient.PostAsJsonAsync("https://localhost:5000/acl", aclData);
         }
 
         private async Task<bool> IsValidRoleAsync(string relation)
         {
-            var response = await _httpClient.GetAsync($"http://localhost:5000/namespace/roles");
+            var response = await _httpClient.GetAsync($"https://localhost:5000/namespace/roles");
             if (response.IsSuccessStatusCode)
             {
                 var result = await response.Content.ReadAsStringAsync();
@@ -149,7 +143,7 @@ namespace RBSBack.Services
         private async Task<List<String>> getNameSpaceRoles()
 
         {
-             var response = await _httpClient.GetAsync($"http://localhost:5000/namespace/roles");
+             var response = await _httpClient.GetAsync($"https://localhost:5000/namespace/roles");
             List<String> roles = new List<String>();
             if (response.IsSuccessStatusCode)
             {
@@ -166,7 +160,7 @@ namespace RBSBack.Services
 
       private async Task<bool> CheckAclAsync(string name, string relation, string username)
         {
-            var response = await _httpClient.GetAsync($"http://localhost:5000/acl/check?object={name}&relation={relation}&user=user:{username}");
+            var response = await _httpClient.GetAsync($"https://localhost:5000/acl/check?object={name}&relation={relation}&user=user:{username}");
             if (response.IsSuccessStatusCode)
             {
                 var result = await response.Content.ReadAsStringAsync();
@@ -181,7 +175,7 @@ namespace RBSBack.Services
             var requestData = new { version };
             var jsonContent = new StringContent(JsonConvert.SerializeObject(requestData), Encoding.UTF8, "application/json");
 
-            var response = await _httpClient.PostAsync("http://localhost:5000/namespace/switch", jsonContent);
+            var response = await _httpClient.PostAsync("https://localhost:5000/namespace/switch", jsonContent);
             if (response.IsSuccessStatusCode)
             {
                 return true;
@@ -217,7 +211,7 @@ namespace RBSBack.Services
         public async Task<bool> CreateNamespace(string jsonString)
         {
             HttpContent content = new StringContent(jsonString, Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync("http://localhost:5000/namespace", content);
+            var response = await _httpClient.PostAsync("https://localhost:5000/namespace", content);
 
             if (response.IsSuccessStatusCode)
             {
@@ -228,7 +222,7 @@ namespace RBSBack.Services
 
         public async Task<string> GetActiveVersionAsync()
         {
-            var response = await _httpClient.GetAsync("http://localhost:5000/active");
+            var response = await _httpClient.GetAsync("https://localhost:5000/active");
             if (response.IsSuccessStatusCode)
             {
                 var result = await response.Content.ReadAsStringAsync();
@@ -240,7 +234,7 @@ namespace RBSBack.Services
 
         public async Task<List<string>> GetAllNamespaceVersionsAsync()
         {
-            var response = await _httpClient.GetAsync("http://localhost:5000/namespaces");
+            var response = await _httpClient.GetAsync("https://localhost:5000/namespaces");
             if (response.IsSuccessStatusCode)
             {
                 var result = await response.Content.ReadAsStringAsync();

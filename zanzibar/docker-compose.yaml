@@ -13,5 +13,9 @@ services:
     environment:
       - CONSUL_HOST=consul
       - CONSUL_PORT=8500
+      - FLASK_ENV=production
+    volumes:
+      - ./server.crt:/app/server.crt
+      - ./server.key:/app/server.key
     depends_on:
       - consul
